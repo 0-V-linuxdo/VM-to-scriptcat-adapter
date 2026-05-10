@@ -28,7 +28,7 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 | 内容 | 介绍 | 与直接导入的区别 |
 | --- | --- | --- |
-| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | ScriptCat 直接导入 VM zip 时只会从 `violentmonkey` 中读取禁用状态，并设置 `item.enabled = false`；转换器会把启用/禁用状态都写成 ScriptCat 备份字段。 |
+| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | 直接导入 VM zip 时，ScriptCat 只在 `config.enabled` 为假值时临时设置 `item.enabled = false`；没有 `.options.json` 时，最终 `settings.enabled` 会按 ScriptCat 默认规则生成。转换后，VM 的启用/禁用值直接成为 ScriptCat 备份字段 `settings.enabled`。 |
 | 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ScriptCat 直接导入不读取 VM 的 `position`；转换后导入页会把 `settings.position` 写入脚本 `sort`。 |
 | 更新时间 | 用 `violentmonkey.scripts[name].lastUpdated` 或 `lastModified` 设置输出文件修改时间，并写入 `.options.json` 的 `meta.modified`。 | ScriptCat 导入安装时使用 `.user.js` 文件的修改时间作为脚本创建/更新时间；直接导入不读取 VM 的 `lastUpdated` 字段。 |
 | 更新检查配置 | 将 `violentmonkey.scripts[name].config.shouldUpdate` 写入 ScriptCat `.options.json` 的 `options.check_for_updates`。 | 这是 ScriptCat 备份结构字段；当前 ScriptCat 导入页不应用 `options.check_for_updates`，所以该字段只在转换后的备份文件中保留。 |
