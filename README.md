@@ -14,13 +14,20 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 本工具不需要安装 npm 依赖，只使用 Node.js 标准库和系统归档工具（`tar`/bsdtar、`zip`）。
 
+## 输出结构
+
+转换器会把 VM 备份整理成 ScriptCat 备份导入使用的同名文件组：
+
+- `${name}.user.js`：脚本源码。
+- `${name}.options.json`：脚本选项与导入设置。
+- `${name}.storage.json`：脚本 GM 数据。
+
 ## 转换内容
 
 这里的“直接导入”指不经过本工具，直接把 Violentmonkey 原始备份 zip 交给 ScriptCat 的“导入文件”功能。
 
 | 内容 | 介绍 | 与直接导入的区别 |
 | --- | --- | --- |
-| `*.user.js` 脚本源码 | 复制 VM 备份中的用户脚本源码，并按 ScriptCat 备份导入使用的 `${name}.user.js` 形式输出。 | ScriptCat 直接导入也会读取 zip 内的 `*.user.js`；转换器的区别是统一输出文件名，并让源码文件与同名 `.options.json`、`.storage.json` 配套。 |
 | 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | ScriptCat 直接导入 VM zip 时只会从 `violentmonkey` 中读取禁用状态，并设置 `item.enabled = false`；转换器会把启用/禁用状态都写成 ScriptCat 备份字段。 |
 | 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ScriptCat 直接导入不读取 VM 的 `position`；转换后导入页会把 `settings.position` 写入脚本 `sort`。 |
 | 更新时间 | 用 `violentmonkey.scripts[name].lastUpdated` 或 `lastModified` 设置输出文件修改时间，并写入 `.options.json` 的 `meta.modified`。 | ScriptCat 导入安装时使用 `.user.js` 文件的修改时间作为脚本创建/更新时间；直接导入不读取 VM 的 `lastUpdated` 字段。 |
