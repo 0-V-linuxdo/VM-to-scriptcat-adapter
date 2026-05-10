@@ -17,11 +17,13 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 ## 输出结构
 
-转换器会把 VM 备份整理成 ScriptCat 备份导入使用的同名文件组：
+每个脚本会输出一组同名文件：
 
-- `${name}.user.js`：脚本源码。
-- `${name}.options.json`：脚本选项与导入设置。
-- `${name}.storage.json`：脚本 GM 数据。
+| 文件 | 用途 |
+| --- | --- |
+| `${name}.user.js` | 脚本源码 |
+| `${name}.options.json` | 脚本选项与导入设置 |
+| `${name}.storage.json` | GM 数据与 UserConfig 已保存值 |
 
 ## 转换内容
 
