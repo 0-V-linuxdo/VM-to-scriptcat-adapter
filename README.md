@@ -20,7 +20,7 @@ archive tools (`tar`/bsdtar and `zip`).
 - `violentmonkey.scripts[name].config.enabled` into ScriptCat import settings.
 - `violentmonkey.scripts[name].position` into ScriptCat import settings.
 - `violentmonkey.scripts[name].custom` metadata overrides for match/include/exclude,
-  run-at, noframes, tags, downloadURL, updateURL, and homepageURL.
+  excludeMatch, run-at, noframes, tags, downloadURL, updateURL, and homepageURL.
 - `violentmonkey.values[uri]` into ScriptCat `.storage.json` using ScriptCat's
   `s/n/b/o` value encoding.
 

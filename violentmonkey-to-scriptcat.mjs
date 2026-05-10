@@ -270,6 +270,7 @@ export function applyViolentmonkeyCustom(code, custom) {
   setListChange(changes, metadata, custom, "match", "origMatch", "match");
   setListChange(changes, metadata, custom, "include", "origInclude", "include");
   setListChange(changes, metadata, custom, "exclude", "origExclude", "exclude");
+  setListChange(changes, metadata, custom, "excludeMatch", "origExcludeMatch", "exclude", { append: true });
   setListChange(changes, metadata, custom, "tag", "origTag", "tag");
 
   const runAt = firstString(custom.runAt ?? custom.run_at);
@@ -292,10 +293,15 @@ export function applyViolentmonkeyCustom(code, custom) {
   return rebuildMetaBlock(code, block, changes);
 }
 
-function setListChange(changes, metadata, custom, customKey, origKey, metaKey) {
+function setListChange(changes, metadata, custom, customKey, origKey, metaKey, options = {}) {
   if (!Object.hasOwn(custom, customKey) && !Object.hasOwn(custom, origKey)) return;
   const customValues = toStringArray(custom[customKey]);
-  const originalValues = asBool(custom[origKey], true) ? metadata[metaKey] || [] : [];
+  const originalValues =
+    options.append && changes.has(metaKey)
+      ? changes.get(metaKey)
+      : asBool(custom[origKey], true)
+        ? metadata[metaKey] || []
+        : [];
   changes.set(metaKey, uniqueStrings([...originalValues, ...customValues]));
 }
 
