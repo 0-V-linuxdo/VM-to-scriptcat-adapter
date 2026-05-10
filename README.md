@@ -28,13 +28,13 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 | 内容 | 实现 | 直接导入 | 转换后导入 |
 | --- | --- | --- | --- |
-| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | ✅ 保持！ | ✅ 保持，并写入标准备份字段！ |
-| 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ❌ 丢失！ | ✅ 保留！ |
-| 更新时间 | 用 `violentmonkey.scripts[name].lastUpdated` 或 `lastModified` 设置输出文件修改时间，并写入 `.options.json` 的 `meta.modified`。 | ❌ 丢失！ | ✅ 保留！ |
-| 更新检查配置 | 将 `violentmonkey.scripts[name].config.shouldUpdate` 写入 ScriptCat `.options.json` 的 `options.check_for_updates`。 | ❌ 丢失！ | ✅ 写入备份文件！当前 ScriptCat 导入页暂不应用。 |
-| 自定义元数据 | 将 `violentmonkey.scripts[name].custom` 合并进源码 metadata，包括 `match`、`include`、`exclude`、`excludeMatch`、`run-at`、`noframes`、`tag`、`downloadURL`、`updateURL` 和 `homepageURL`。 | ❌ 丢失！ | ✅ 写回 metadata 后导入！ |
-| GM 数据与 UserConfig 已保存值 | 将 `violentmonkey.values[uri]` 写入 ScriptCat `.storage.json`，并使用 ScriptCat 的 `s/n/b/o` 数据编码。 | ❌ 丢失！ | ✅ 导入！ |
-| 通配主机排除规则 | 对 `*://*.example.com/*` 这类 VM 排除规则，额外生成 `*://example.com/*`。 | ❌ 漏掉裸域名！ | ✅ 同时保留子域名和裸域名！ |
+| 启用状态 | `config.enabled` -> `settings.enabled` | ✅ 保持！ | ✅ 保持，并写入标准备份字段！ |
+| 脚本排序 | `position` -> `settings.position` | ❌ 丢失！ | ✅ 保留！ |
+| 更新时间 | `lastUpdated/lastModified` -> `meta.modified` | ❌ 丢失！ | ✅ 保留！ |
+| 更新检查配置 | `shouldUpdate` -> `options.check_for_updates` | ❌ 丢失！ | ✅ 写入备份文件！当前 ScriptCat 导入页暂不应用。 |
+| 自定义元数据 | `custom` -> 脚本 metadata | ❌ 丢失！ | ✅ 写回 metadata 后导入！ |
+| GM 数据与 UserConfig 已保存值 | `values[uri]` -> `.storage.json` | ❌ 丢失！ | ✅ 导入！ |
+| 通配主机排除规则 | `*://*.example.com/*` -> 额外生成 `*://example.com/*` | ❌ 漏掉裸域名！ | ✅ 同时保留子域名和裸域名！ |
 
 Violentmonkey 的全局 `settings` 不会转换，因为它不是脚本级数据，和 ScriptCat 系统配置没有稳定的一一对应关系。
 
