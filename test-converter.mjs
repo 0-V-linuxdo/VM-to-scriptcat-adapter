@@ -79,7 +79,7 @@ console.log("same name, different namespace");
             include: ["https://include-extra.example/*"],
             origInclude: true,
             exclude: ["https://blocked.example/*"],
-            excludeMatch: ["https://vm-excluded.example/*"],
+            excludeMatch: ["*://*.vm-excluded.example/*"],
             origExclude: false,
             origExcludeMatch: true,
             runAt: "document-start",
@@ -148,7 +148,8 @@ console.log("same name, different namespace");
     assert.match(convertedCode, /@include\s+https:\/\/include-old\.example\/\*/);
     assert.match(convertedCode, /@include\s+https:\/\/include-extra\.example\/\*/);
     assert.match(convertedCode, /@exclude\s+https:\/\/blocked\.example\/\*/);
-    assert.match(convertedCode, /@exclude\s+https:\/\/vm-excluded\.example\/\*/);
+    assert.match(convertedCode, /@exclude\s+\*:\/\/\*\.vm-excluded\.example\/\*/);
+    assert.match(convertedCode, /@exclude\s+\*:\/\/vm-excluded\.example\/\*/);
     assert.doesNotMatch(convertedCode, /@exclude\s+https:\/\/exclude-old\.example\/\*/);
     assert.match(convertedCode, /@run-at\s+document-start/);
     assert.match(convertedCode, /@noframes/);
@@ -162,7 +163,8 @@ console.log("same name, different namespace");
     assert.equal(options.options.run_at, "document-start");
     assert.deepEqual(options.options.override.orig_excludes, [
       "https://blocked.example/*",
-      "https://vm-excluded.example/*",
+      "*://*.vm-excluded.example/*",
+      "*://vm-excluded.example/*",
     ]);
     assert.equal(options.meta.file_url, "https://example.com/adapter-demo.user.js");
 

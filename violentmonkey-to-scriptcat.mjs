@@ -270,7 +270,10 @@ export function applyViolentmonkeyCustom(code, custom) {
   setListChange(changes, metadata, custom, "match", "origMatch", "match");
   setListChange(changes, metadata, custom, "include", "origInclude", "include");
   setListChange(changes, metadata, custom, "exclude", "origExclude", "exclude");
-  setListChange(changes, metadata, custom, "excludeMatch", "origExcludeMatch", "exclude", { append: true });
+  setListChange(changes, metadata, custom, "excludeMatch", "origExcludeMatch", "exclude", {
+    append: true,
+    expandValues: expandWildcardHostExcludes,
+  });
   setListChange(changes, metadata, custom, "tag", "origTag", "tag");
 
   const runAt = firstString(custom.runAt ?? custom.run_at);
@@ -295,7 +298,9 @@ export function applyViolentmonkeyCustom(code, custom) {
 
 function setListChange(changes, metadata, custom, customKey, origKey, metaKey, options = {}) {
   if (!Object.hasOwn(custom, customKey) && !Object.hasOwn(custom, origKey)) return;
-  const customValues = toStringArray(custom[customKey]);
+  const rawCustomValues = toStringArray(custom[customKey]);
+  const customValues =
+    typeof options.expandValues === "function" ? options.expandValues(rawCustomValues) : rawCustomValues;
   const originalValues =
     options.append && changes.has(metaKey)
       ? changes.get(metaKey)
@@ -303,6 +308,24 @@ function setListChange(changes, metadata, custom, customKey, origKey, metaKey, o
         ? metadata[metaKey] || []
         : [];
   changes.set(metaKey, uniqueStrings([...originalValues, ...customValues]));
+}
+
+function expandWildcardHostExcludes(values) {
+  const ret = [];
+  for (const value of values) {
+    ret.push(value);
+    const bareHostValue = toBareHostMatchPattern(value);
+    if (bareHostValue) ret.push(bareHostValue);
+  }
+  return uniqueStrings(ret);
+}
+
+function toBareHostMatchPattern(value) {
+  const match = /^(\*|[-a-z]+|http\*):\/\/\*\.([^*/:?#]+)(\/.*)?$/i.exec(value);
+  if (!match) return "";
+  const [, scheme, host, pathPart] = match;
+  if (!host || /[*?]/.test(host)) return "";
+  return `${scheme}://${host}${pathPart || "/*"}`;
 }
 
 function rebuildMetaBlock(code, block, changes) {
