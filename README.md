@@ -26,7 +26,7 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 这里的“直接导入”指不经过本工具，直接把 Violentmonkey 原始备份 zip 交给 ScriptCat 的“导入文件”功能。
 
-| 内容 | 介绍 | 直接导入 VM zip | 转换后导入 |
+| 内容 | 实现 | 直接导入 | 转换后导入 |
 | --- | --- | --- | --- |
 | 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | ✅ 保持！ | ✅ 保持，并写入标准备份字段！ |
 | 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ❌ 丢失！ | ✅ 保留！ |
