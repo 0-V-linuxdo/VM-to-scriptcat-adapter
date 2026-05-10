@@ -1,6 +1,7 @@
-# Violentmonkey Zip 转 ScriptCat 备份
+# Violentmonkey 备份转 ScriptCat 备份
 
-这是一个独立转换器，用来把 Violentmonkey 导出的备份 zip 转成 ScriptCat 可导入的备份 zip。它不会改动 ScriptCat 的源码、配置、依赖或构建产物。
+把 Violentmonkey 导出的备份 zip，转成 ScriptCat 可直接导入的备份 zip。
+转换器独立运行，不改动 ScriptCat 的源码、配置、依赖或构建产物。
 
 ## 使用方式
 
