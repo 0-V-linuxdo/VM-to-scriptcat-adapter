@@ -20,14 +20,14 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 | 内容 | 介绍 | 与直接导入的区别 |
 | --- | --- | --- |
-| `*.user.js` 脚本源码 | 复制 VM 备份中的用户脚本源码，并按 ScriptCat 支持的导入文件名输出。 | VM 原始备份不是 ScriptCat 备份结构；转换后每个脚本都有 ScriptCat 可识别的 `${name}.user.js`。 |
-| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json`。 | 直接导入不解析 `violentmonkey.scripts[name].config.enabled`，因此不会把 VM 的启用/禁用状态写入 ScriptCat。 |
-| 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json`。 | 直接导入不解析 `violentmonkey.scripts[name].position`，因此不会恢复 VM 的脚本排序。 |
-| 更新时间 | 将 `violentmonkey.scripts[name].lastUpdated` 写入 ScriptCat `.options.json`。 | 直接导入不解析 `violentmonkey.scripts[name].lastUpdated`，因此不会保留 VM 记录的脚本更新时间。 |
-| 更新检查配置 | 将 `violentmonkey.scripts[name].config.shouldUpdate` 写入 ScriptCat `.options.json`。 | 直接导入不解析 `violentmonkey.scripts[name].config.shouldUpdate`，因此不会恢复 VM 的单脚本更新检查开关。 |
-| 自定义元数据 | 将 `violentmonkey.scripts[name].custom` 合并到 metadata，包括 `match`、`include`、`exclude`、`excludeMatch`、`run-at`、`noframes`、`tag`、`downloadURL`、`updateURL` 和 `homepageURL`。 | 直接导入不解析 `violentmonkey.scripts[name].custom`，因此不会应用 VM 设置页里改过的匹配、排除、运行时机和更新地址。 |
-| GM 数据与 UserConfig 已保存值 | 将 `violentmonkey.values[uri]` 写入 ScriptCat `.storage.json`，并使用 ScriptCat 的 `s/n/b/o` 数据编码。 | 直接导入不解析 `violentmonkey.values[uri]`，因此不会生成 ScriptCat `.storage.json`，脚本 GM value 与 UserConfig 已保存值不会进入 ScriptCat storage。 |
-| 通配主机排除规则 | 对 `*://*.example.com/*` 这类 VM 排除规则，额外生成 `*://example.com/*`。 | 直接导入不执行这层兼容展开；转换后同时存在子域名规则和裸域名规则。 |
+| `*.user.js` 脚本源码 | 复制 VM 备份中的用户脚本源码，并按 ScriptCat 备份导入使用的 `${name}.user.js` 形式输出。 | ScriptCat 直接导入也会读取 zip 内的 `*.user.js`；转换器的区别是统一输出文件名，并让源码文件与同名 `.options.json`、`.storage.json` 配套。 |
+| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | ScriptCat 直接导入 VM zip 时只会从 `violentmonkey` 中读取禁用状态，并设置 `item.enabled = false`；转换器会把启用/禁用状态都写成 ScriptCat 备份字段。 |
+| 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ScriptCat 直接导入不读取 VM 的 `position`；转换后导入页会把 `settings.position` 写入脚本 `sort`。 |
+| 更新时间 | 用 `violentmonkey.scripts[name].lastUpdated` 或 `lastModified` 设置输出文件修改时间，并写入 `.options.json` 的 `meta.modified`。 | ScriptCat 导入安装时使用 `.user.js` 文件的修改时间作为脚本创建/更新时间；直接导入不读取 VM 的 `lastUpdated` 字段。 |
+| 更新检查配置 | 将 `violentmonkey.scripts[name].config.shouldUpdate` 写入 ScriptCat `.options.json` 的 `options.check_for_updates`。 | 这是 ScriptCat 备份结构字段；当前 ScriptCat 导入页不应用 `options.check_for_updates`，所以该字段只在转换后的备份文件中保留。 |
+| 自定义元数据 | 将 `violentmonkey.scripts[name].custom` 合并进源码 metadata，包括 `match`、`include`、`exclude`、`excludeMatch`、`run-at`、`noframes`、`tag`、`downloadURL`、`updateURL` 和 `homepageURL`。 | ScriptCat 直接导入只解析 `.user.js` 源码里的 metadata，不读取 VM `custom`；转换后 VM 设置页里的自定义规则会变成源码 metadata。 |
+| GM 数据与 UserConfig 已保存值 | 将 `violentmonkey.values[uri]` 写入 ScriptCat `.storage.json`，并使用 ScriptCat 的 `s/n/b/o` 数据编码。 | ScriptCat 直接导入不读取 VM `values`；转换后导入页会读取 `.storage.json`，解码后写入 ScriptCat storage。 |
+| 通配主机排除规则 | 对 `*://*.example.com/*` 这类 VM 排除规则，额外生成 `*://example.com/*`。 | ScriptCat URL 匹配会把含 `*.` 的 `@exclude` 保留为 glob；转换后同时存在子域名规则和裸域名规则，覆盖 `https://example.com/`。 |
 
 Violentmonkey 的全局 `settings` 不会转换，因为它不是脚本级数据，和 ScriptCat 系统配置没有稳定的一一对应关系。
 
