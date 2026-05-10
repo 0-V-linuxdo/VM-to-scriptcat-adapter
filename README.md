@@ -28,13 +28,13 @@ node violentmonkey-to-scriptcat.mjs violentmonkey-backup.zip -o scriptcat-backup
 
 | 内容 | 介绍 | 直接导入 VM zip | 转换后导入 |
 | --- | --- | --- | --- |
-| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | 功能上基本一样：启用的仍启用，禁用的仍禁用。 | 功能上基本一样：启用的仍启用，禁用的仍禁用；同时把这个状态正式写进 `.options.json`。 |
-| 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ❌ 丢掉 VM 里的脚本排序。 | ✅ 按 VM 原来的顺序写入 ScriptCat。 |
-| 更新时间 | 用 `violentmonkey.scripts[name].lastUpdated` 或 `lastModified` 设置输出文件修改时间，并写入 `.options.json` 的 `meta.modified`。 | ❌ 丢掉 VM 记录的脚本更新时间。 | ✅ 把 VM 的更新时间带进 ScriptCat。 |
-| 更新检查配置 | 将 `violentmonkey.scripts[name].config.shouldUpdate` 写入 ScriptCat `.options.json` 的 `options.check_for_updates`。 | ❌ 丢掉 VM 里的更新检查开关。 | ✅ 把这个开关保留在 ScriptCat 备份文件中；当前 ScriptCat 导入页暂不应用它。 |
-| 自定义元数据 | 将 `violentmonkey.scripts[name].custom` 合并进源码 metadata，包括 `match`、`include`、`exclude`、`excludeMatch`、`run-at`、`noframes`、`tag`、`downloadURL`、`updateURL` 和 `homepageURL`。 | ❌ 丢掉 VM 设置页里改过的匹配、排除、运行时机和更新地址等配置。 | ✅ 先把这些设置写回脚本 metadata，再交给 ScriptCat 导入。 |
-| GM 数据与 UserConfig 已保存值 | 将 `violentmonkey.values[uri]` 写入 ScriptCat `.storage.json`，并使用 ScriptCat 的 `s/n/b/o` 数据编码。 | ❌ 丢掉脚本的 GM 数据和 UserConfig 已保存值。 | ✅ 生成 `.storage.json`，导入后这些数据会进入 ScriptCat storage。 |
-| 通配主机排除规则 | 对 `*://*.example.com/*` 这类 VM 排除规则，额外生成 `*://example.com/*`。 | ❌ 只保留 `*://*.example.com/*` 时，裸域名 `https://example.com/` 不会被排除。 | ✅ 同时生成子域名规则和裸域名规则。 |
+| 启用状态 | 将 `violentmonkey.scripts[name].config.enabled` 写入 ScriptCat `.options.json` 的 `settings.enabled`。 | ✅ 保持 启用/禁用状态！ | ✅ 保持 启用/禁用状态，并写入标准备份字段！ |
+| 脚本排序 | 将 `violentmonkey.scripts[name].position` 写入 ScriptCat `.options.json` 的 `settings.position`。 | ❌ 丢失 脚本排序！ | ✅ 保留 脚本排序！ |
+| 更新时间 | 用 `violentmonkey.scripts[name].lastUpdated` 或 `lastModified` 设置输出文件修改时间，并写入 `.options.json` 的 `meta.modified`。 | ❌ 丢失 脚本更新时间！ | ✅ 保留 脚本更新时间！ |
+| 更新检查配置 | 将 `violentmonkey.scripts[name].config.shouldUpdate` 写入 ScriptCat `.options.json` 的 `options.check_for_updates`。 | ❌ 丢失 更新检查开关！ | ✅ 写入 更新检查开关！当前 ScriptCat 导入页暂不应用。 |
+| 自定义元数据 | 将 `violentmonkey.scripts[name].custom` 合并进源码 metadata，包括 `match`、`include`、`exclude`、`excludeMatch`、`run-at`、`noframes`、`tag`、`downloadURL`、`updateURL` 和 `homepageURL`。 | ❌ 丢失 设置页里改过的匹配、排除、运行时机和更新地址等配置！ | ✅ 保留 设置页里改过的脚本配置！ |
+| GM 数据与 UserConfig 已保存值 | 将 `violentmonkey.values[uri]` 写入 ScriptCat `.storage.json`，并使用 ScriptCat 的 `s/n/b/o` 数据编码。 | ❌ 丢失 GM 数据和 UserConfig 已保存值！ | ✅ 导入 GM 数据和 UserConfig 已保存值！ |
+| 通配主机排除规则 | 对 `*://*.example.com/*` 这类 VM 排除规则，额外生成 `*://example.com/*`。 | ❌ 漏掉 裸域名排除规则！ | ✅ 同时保留 子域名和裸域名排除规则！ |
 
 Violentmonkey 的全局 `settings` 不会转换，因为它不是脚本级数据，和 ScriptCat 系统配置没有稳定的一一对应关系。
 
